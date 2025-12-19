@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 const Home = () => {
     const [name, setName] = useState('');
@@ -9,7 +10,7 @@ const Home = () => {
 
     const handleCreate = async () => {
         try {
-            const res = await axios.post('/api/game/create', { playerName: name });
+            const res = await axios.post(`${API_URL}/game/create`, { playerName: name });
             const { roomId, players } = res.data;
             const myPlayerId = players[0].id; // Host is first
 
@@ -25,7 +26,7 @@ const Home = () => {
 
     const handleJoin = async () => {
         try {
-            const res = await axios.post('/api/game/join', { roomId, playerName: name });
+            const res = await axios.post(`${API_URL}/game/join`, { roomId, playerName: name });
             const { players } = res.data;
 
             // We need to identify which player we are. 

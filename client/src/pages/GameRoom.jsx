@@ -5,9 +5,10 @@ import axios from 'axios';
 import Board from '../components/Board';
 import Dice from '../components/Dice';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { API_URL, SOCKET_URL } from '../config';
 
-// Use relative path for socket, let proxy handle it or fallback
-const socket = io({ path: '/socket.io' });
+// Use configured socket URL
+const socket = io(SOCKET_URL, { path: '/socket.io' });
 
 const GameRoomContent = () => {
     const { roomId } = useParams();
@@ -32,7 +33,7 @@ const GameRoomContent = () => {
 
         const fetchGame = async () => {
             try {
-                const res = await axios.get(`/api/game/${roomId}`);
+                const res = await axios.get(`${API_URL}/game/${roomId}`);
                 setGame(res.data);
                 setLoading(false);
             } catch (err) {
@@ -65,7 +66,7 @@ const GameRoomContent = () => {
         if (!game) return;
         setRolling(true);
         try {
-            const res = await axios.post('/api/game/roll', {
+            const res = await axios.post(`${API_URL}/game/roll`, {
                 roomId,
                 playerId
             });
