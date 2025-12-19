@@ -20,7 +20,7 @@ const Home = () => {
             navigate(`/game/${roomId}`);
         } catch (err) {
             console.error(err);
-            alert('Error creating game');
+            alert(`Error creating game.\n\nTrying to connect to: ${API_URL}\n\nDetails: ${err.message}`);
         }
     };
 
