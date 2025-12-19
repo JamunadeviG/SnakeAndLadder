@@ -7,6 +7,10 @@ const socketHandler = (io) => {
             console.log(`Socket ${socket.id} joined room ${roomId}`);
         });
 
+        socket.on('playerRolling', ({ roomId, playerId }) => {
+            socket.to(roomId).emit('playerRolling', { playerId });
+        });
+
         socket.on('disconnect', () => {
             console.log('Client disconnected:', socket.id);
         });

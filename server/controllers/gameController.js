@@ -51,6 +51,11 @@ exports.joinGame = async (req, res) => {
         });
 
         await game.save();
+
+        if (req.io) {
+            req.io.to(roomId).emit('gameStateUpdate', game);
+        }
+
         res.status(200).json(game);
     } catch (err) {
         res.status(500).json({ error: err.message });

@@ -20,6 +20,8 @@ const GameRoomContent = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [rollingPlayer, setRollingPlayer] = useState(null);
+
     // Retrieve player identity from storage
     const playerId = localStorage.getItem(`player_${roomId}`);
     // const playerName = localStorage.getItem(`name_${roomId}`);
@@ -45,11 +47,21 @@ const GameRoomContent = () => {
 
         fetchGame();
 
+        // Join the socket room for real-time updates
         socket.emit('joinRoom', roomId);
+
+        console.log("Joining socket room:", roomId);
 
         socket.on('gameStateUpdate', (updatedGame) => {
             console.log('Game update received:', updatedGame);
             setGame(updatedGame);
+            setRollingPlayer(null); // Clear rolling status on update
+        });
+
+        socket.on('playerRolling', ({ playerId: rollingId }) => {
+            if (rollingId !== playerId) {
+                setRollingPlayer(rollingId);
+            }
         });
 
         socket.on('connect_error', (err) => {
@@ -58,6 +70,7 @@ const GameRoomContent = () => {
 
         return () => {
             socket.off('gameStateUpdate');
+            socket.off('playerRolling');
             socket.off('connect_error');
         };
     }, [roomId, navigate, playerId]);
@@ -65,6 +78,7 @@ const GameRoomContent = () => {
     const handleRoll = async () => {
         if (!game) return;
         setRolling(true);
+        socket.emit('playerRolling', { roomId, playerId }); // Notify others
         try {
             const res = await axios.post(`${API_URL}/game/roll`, {
                 roomId,
@@ -115,6 +129,12 @@ const GameRoomContent = () => {
                     <div className="text-xl font-bold text-blue-600 mb-4">
                         {isMyTurn ? "YOUR TURN!" : `${currentTurnPlayer?.name}'s Turn`}
                     </div>
+
+                    {rollingPlayer && (
+                        <div className="text-sm text-yellow-600 font-semibold animate-pulse mb-2">
+                            {game.players.find(p => p.id === rollingPlayer)?.name} is rolling...
+                        </div>
+                    )}
 
                     <div className="flex justify-center mb-4">
                         <Dice
