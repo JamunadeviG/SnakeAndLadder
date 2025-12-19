@@ -7,7 +7,7 @@ const isProduction = import.meta.env.PROD;
 // No, default to localhost only in dev.
 
 export const API_URL = isProduction
-    ? (import.meta.env.VITE_API_URL || 'http://localhost:5000') // Fallback during testing of built app locally
+    ? (import.meta.env.VITE_API_URL || 'http://localhost:5000/api') // Fallback during testing of built app locally
     : '/api'; // Use proxy in development
 
 export const SOCKET_URL = isProduction
